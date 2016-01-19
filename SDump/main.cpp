@@ -103,33 +103,30 @@ void idaapi getl(void *obj, uint32 n, char * const *arrptr)
 	qsnprintf(arrptr[3], MAXSTR, "%08a", segm[n - 1]->endEA - segm[n - 1]->startEA);
 }
 
+static void dump(segment_t** segm, uint32 idx)
+{
+	char segm_name[MAXSTR];
+	get_segm_name(segm[idx - 1], segm_name, MAXSTR);
+	msg("Dumping %s to disk... ", segm_name);
+	msg("%s\n", dump_segm(idx - 1) ? "Done!" : "Failed!");
+}
+
 // Callback function invoking dumping process by pressing Enter.
 static void idaapi enter_cb(void *obj, uint32 n)
 {
-	segment_t **segm = (segment_t **)obj;
-	char segm_name[MAXSTR];
-	get_segm_name(segm[n - 1], segm_name, MAXSTR);
-	msg("Dumping %s to disk... ", segm_name);
-	msg("%s\n", dump_segm(n - 1) ? "Done!" : "Failed!");
-	return;
+	dump((segment_t **)obj, n);
 }
 
 // Callback function invoked upon window closure.
 static void idaapi destroy_cb(void *obj)
 {
 	(void)(obj);
-	return;
 }
 
 // Callback function invoking dumping process by using pop-up menu, identical to enter_cb
 static void idaapi edit_cb(void *obj, uint32 n)
 {
-	segment_t **segm = (segment_t **)obj;
-	char segm_name[MAXSTR];
-	get_segm_name(segm[n - 1], segm_name, MAXSTR);
-	msg("Dumping %s to disk... ", segm_name);
-	msg("%s\n", dump_segm(n - 1) ? "Done!" : "Failed!");
-	return;
+	dump((segment_t **)obj, n);
 }
 
 // Function executed upon initialization of the plugin.
@@ -158,7 +155,7 @@ void idaapi run(int arg)
 	}
 
 	// Show a list of segments.
-	auto res = choose2(
+	auto idx = choose2(
 		info,				// object
 		qnumber(header),	// number of columns
 		widths,				// widths of columns
@@ -177,12 +174,9 @@ void idaapi run(int arg)
 		NULL				// default icon
 		);
 
-	if (res > 0)
+	if (idx > 0)
 	{
-		char segm_name[MAXSTR];
-		get_segm_name(info[res - 1], segm_name, MAXSTR);
-		msg("Dumping %s to disk... ", segm_name);
-		msg("%s\n", dump_segm(res - 1) ? "Done!" : "Failed!");
+		dump(info, idx);
 	}
 	qfree(info);
 	return;
