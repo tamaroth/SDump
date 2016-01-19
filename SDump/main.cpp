@@ -158,7 +158,7 @@ void idaapi run(int arg)
 	}
 
 	// Show a list of segments.
-	choose2(
+	auto res = choose2(
 		info,				// object
 		qnumber(header),	// number of columns
 		widths,				// widths of columns
@@ -176,6 +176,14 @@ void idaapi run(int arg)
 		popup_names,		// default pop-up names
 		NULL				// default icon
 		);
+
+	if (res > 0)
+	{
+		char segm_name[MAXSTR];
+		get_segm_name(info[res - 1], segm_name, MAXSTR);
+		msg("Dumping %s to disk... ", segm_name);
+		msg("%s\n", dump_segm(res - 1) ? "Done!" : "Failed!");
+	}
 	qfree(info);
 	return;
 }
