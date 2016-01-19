@@ -16,3 +16,13 @@ To properlly build and install the plugin, you must:
   * Change Additional Dependencies to %IDASDK%\lib\x86_win_vc_32\ida.lib where %IDASDK% is the directory where you have your IDA SDK.
 
 Based on [Segdump by Dennis Elser](http://www.openrce.org/downloads/details/51/SegDump)
+
+Copy sdump.plw to %IDAPRO%\plugins\ directory.
+
+In IDA press ALT+5 for a list of loaded segments to appear. Select the one you want and dump it by:
+* pressing Enter
+* pressing OK button
+* right clicking on item and choosing 'Dump segment to disk'
+* pressing CTRL+E
+
+'Save as' window will show up to let you save the file and message confirming that the dump was successful or failed.
